@@ -224,47 +224,6 @@ static int waveshare_unprepare(struct drm_panel *panel)
 	return 0;
 }
 
-static void waveshare_gen_write(struct mipi_dsi_device *dsi, const void *data, size_t len)
-{
-	int ret;
-
-	ret = mipi_dsi_generic_write(dsi, data, len);
-	if (ret < 0) {
-		dev_err(&dsi->dev, "failed to writing gen seq\n");
-	}
-}
-
-#define waveshare_gen_write_seq(dsi, seq...) \
-({\
-	static const u8 d[] = { seq };\
-	waveshare_gen_write(dsi, d, ARRAY_SIZE(d));\
-})
-
-static int waveshare_dsi_init(struct waveshare *p)
-{
-	struct mipi_dsi_device *dsi = p->dsi;
-
-	waveshare_gen_write_seq(dsi, 0x10, 0x02, 0x03, 0x00, 0x00, 0x00);//LANE
-	waveshare_gen_write_seq(dsi, 0x64, 0x01, 0x0c, 0x00, 0x00, 0x00);//D0S_CLRSIPOCOUNT
-	waveshare_gen_write_seq(dsi, 0x68, 0x01, 0x0c, 0x00, 0x00, 0x00);//D1S_CLRSIPOCOUNT
-	waveshare_gen_write_seq(dsi, 0x44, 0x01, 0x00, 0x00, 0x00, 0x00);//D0S_ATMR
-	waveshare_gen_write_seq(dsi, 0x48, 0x01, 0x00, 0x00, 0x00, 0x00);//D1S_ATMR
-	waveshare_gen_write_seq(dsi, 0x14, 0x01, 0x15, 0x00, 0x00, 0x00);//LPTXTIMCNT
-	waveshare_gen_write_seq(dsi, 0x50, 0x04, 0x60, 0x00, 0x00, 0x00);//SPICMR/SPICTRL
-	waveshare_gen_write_seq(dsi, 0x20, 0x04, 0x52, 0x01, 0x10, 0x00);//PORT/LCDCTRL
-	waveshare_gen_write_seq(dsi, 0x24, 0x04, 0x14, 0x00, 0x1a, 0x00);//HBPR/HSR
-	waveshare_gen_write_seq(dsi, 0x28, 0x04, 0x20, 0x03, 0x69, 0x00);//HFPR/HDISP(*)
-	waveshare_gen_write_seq(dsi, 0x2c, 0x04, 0x02, 0x00, 0x15, 0x00);//VBFR/VSR
-	waveshare_gen_write_seq(dsi, 0x30, 0x04, 0xe0, 0x01, 0x07, 0x00);//VFPR/VDISP(*)
-	waveshare_gen_write_seq(dsi, 0x34, 0x04, 0x01, 0x00, 0x00, 0x00);//VFUEN
-	waveshare_gen_write_seq(dsi, 0x64, 0x04, 0x0f, 0x04, 0x00, 0x00);//SYSCTRL
-	waveshare_gen_write_seq(dsi, 0x04, 0x01, 0x01, 0x00, 0x00, 0x00);//STARTPPI
-	waveshare_gen_write_seq(dsi, 0x04, 0x02, 0x01, 0x00, 0x00, 0x00);//STARTDSI
-
-	usleep_range(10, 20);
-	return 0;
-}
-
 static int waveshare_prepare(struct drm_panel *panel)
 {
 	struct waveshare *p = to_waveshare(panel);
@@ -298,8 +257,6 @@ static int waveshare_enable(struct drm_panel *panel)
 		return 0;
 
 	printk("panel enable\n");
-
-	waveshare_dsi_init(p);
 
 	if (p->desc && p->desc->delay.enable)
 		msleep(p->desc->delay.enable);
