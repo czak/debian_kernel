@@ -280,7 +280,7 @@
 &dsi0 {
 	status = "okay";
 	mipi_panel: mipi-panel {
-		compatible ="asus,tc358762";
+		compatible ="waveshare,dsi-lcd-43";
 		reg = <0>;
 		status = "okay";
 	};

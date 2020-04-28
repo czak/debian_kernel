@@ -7,6 +7,16 @@ config DRM_PANEL_TOSHIBA_TC358762
 	  Say Y here if you want to enable support for toshiba tc358762 bridge.
 	  To compile this driver as a module, choose M here.
 
+config DRM_PANEL_WAVESHARE
+	tristate "support for Waveshare 4.3 inch DSI LCD"
+	depends on OF
+	depends on BACKLIGHT_CLASS_DEVICE
+	select VIDEOMODE_HELPERS
+	help
+	  Say Y here if you want to enable support for Waveshare
+	  4.3 inch DSI LCD.
+	  To compile this driver as a module, choose M here.
+
 config ROCKCHIP_DW_MIPI_DSI2
 	tristate "Rockchip specific extensions for Synopsys DW MIPI DSI"
 	depends on DRM_ROCKCHIP
